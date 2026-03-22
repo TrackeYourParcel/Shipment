@@ -6,224 +6,252 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
+      background: #f3f4f6;
       text-align: center;
-      background: linear-gradient(135deg, #dbeafe, #fce7f3);
     }
 
-    /* HEADER (Company Name) */
     .header {
-      background: #2563eb;
+      background: #1e40af;
       color: white;
       padding: 15px;
       font-size: 22px;
       font-weight: bold;
-      letter-spacing: 1px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
 
-    h1 {
-      margin-top: 30px;
-      font-size: 24px;
-      color: #222;
-    }
-
-    .container {
-      margin-top: 40px;
-    }
-
-    input {
-      padding: 12px;
-      width: 220px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+    input, button {
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
     }
 
     button {
-      padding: 12px 20px;
-      font-size: 16px;
-      margin-left: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #2563eb;
+      background: #1e40af;
       color: white;
+      border: none;
     }
 
-    /* Loading */
     #loadingBox {
-      display: none;
-      margin-top: 30px;
+      display:none;
+      margin-top:20px;
     }
 
     .spinner {
-      margin: auto;
-      width: 50px;
-      height: 50px;
-      border: 6px solid #ddd;
-      border-top: 6px solid #2563eb;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+      width:40px;
+      height:40px;
+      border:5px solid #ddd;
+      border-top:5px solid #1e40af;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:auto;
     }
 
     @keyframes spin {
       100% { transform: rotate(360deg); }
     }
 
-    /* Result Card */
     #resultBox {
       display: none;
       margin: 30px auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 380px;
+      max-width: 550px;
       background: white;
-      border-radius: 15px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      text-align: left;
-    }
-
-    .status {
-      font-weight: bold;
-      color: #16a34a;
-    }
-
-    /* Route */
-    .route {
-      font-size: 14px;
-      margin: 10px 0;
-      color: #444;
-    }
-
-    /* Progress bar */
-    .progress {
-      margin: 15px 0;
-      height: 10px;
-      background: #eee;
+      padding: 20px;
       border-radius: 10px;
-      overflow: hidden;
+      text-align: left;
+      animation: fadeIn 0.5s ease;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #2563eb;
-      transition: width 2s;
+    @keyframes fadeIn {
+      from {opacity:0;}
+      to {opacity:1;}
     }
 
-    /* Timeline */
-    .timeline {
-      margin-top: 15px;
-      font-size: 14px;
-    }
+    .section { margin-top:15px; font-size:14px; }
 
     .step {
-      margin: 8px 0;
+      margin: 10px 0;
       padding-left: 10px;
       border-left: 3px solid #ccc;
     }
 
     .active {
-      border-left: 3px solid #2563eb;
+      border-left: 3px solid red;
+      color: red;
       font-weight: bold;
     }
 
+    .sub { margin-left:15px; font-size:13px; color:#555; }
+
+    .progress {
+      height: 8px;
+      background: #ddd;
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 85%;
+      background: #1e40af;
+    }
+
+    table {
+      width:100%;
+      font-size:13px;
+      margin-top:10px;
+      border-collapse: collapse;
+    }
+
+    td, th { padding:6px; }
+
+    #paymentModal {
+      display:none;
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.6);
+      justify-content:center;
+      align-items:center;
+    }
   </style>
 </head>
 
 <body>
 
-<div class="header">SHIPITO</div>
+<div class="header">SHIPITO GLOBAL LOGISTICS</div>
 
-<h1>Track Your Shipment</h1>
+<h2>Track Shipment</h2>
 
-<div class="container">
-  <input type="text" id="code" placeholder="Enter tracking number">
-  <button onclick="search()">Track</button>
+<input id="code" placeholder="Enter tracking number">
+<br>
+<button onclick="search()">Track</button>
 
-  <div id="loadingBox">
-    <div class="spinner"></div>
-    <p>Fetching shipment details...</p>
+<div id="loadingBox">
+  <div class="spinner"></div>
+  <p>Fetching shipment details...</p>
+</div>
+
+<div id="resultBox">
+
+  <h3>Shipment Details</h3>
+
+  <p><b>Tracking ID:</b> 58669397071</p>
+
+  <p><b>Status:</b> <span id="status" style="color:red;">On Hold - Customs Clearance (Delhi, India)</span></p>
+
+  <p><b>Last Updated:</b> <span id="time"></span></p>
+
+  <div class="section">
+    <b>From:</b><br>
+    Wayne K Walton<br>
+    Torrance, CA, USA
   </div>
 
-  <div id="resultBox">
-    <h3>Shipment Details</h3>
-    <p><b>Tracking ID:</b> <span id="trackId"></span></p>
-    <p><b>Status:</b> <span class="status" id="statusText"></span></p>
-
-    <div class="route">
-      📍 <b>From:</b> Torrance, California, USA <br>
-      📦 <b>To:</b> Mohali, Punjab, India
-    </div>
-
-    <div class="progress">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <div class="timeline" id="timeline"></div>
+  <div class="section">
+    <b>To:</b><br>
+    Mandeep Singh<br>
+    Mohali, Punjab, India
   </div>
+
+  <div class="section" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+    <div><b>Service:</b><br>Express Worldwide</div>
+    <div><b>Weight:</b><br>2.7 lbs</div>
+    <div><b>Shipment Type:</b><br>Package</div>
+    <div><b>Payment:</b><br>Pending Customs</div>
+  </div>
+
+  <div class="section">
+    <b>Estimated Delivery:</b> <span id="countdown"></span><br>
+    <b>Package Value:</b> $2899.99
+  </div>
+
+  <div class="progress"><div class="progress-bar"></div></div>
+
+  <!-- TIMELINE -->
+  <div class="step">Pickup Scheduled</div>
+  <div class="step">Picked up by DHL Express</div>
+  <div class="step">Dispatched from USA</div>
+
+  <div class="step active">
+    Arrived at Delhi International Hub (DEL)
+    <div class="sub">Shipment on hold for customs clearance</div>
+  </div>
+
+  <div class="step">Customs Clearance Processing</div>
+  <div class="step">Out for Delivery (Mohali)</div>
+  <div class="step">Delivered</div>
+
+  <!-- CUSTOMS -->
+  <div style="background:#fff7ed; padding:10px; margin-top:10px;">
+    <b>Customs Duty:</b> ₹32,197<br><br>
+    Shipment is currently on hold at Delhi customs. Payment details will be shared shortly.
+    <br><br>
+    <button onclick="openPay()">View Payment Info</button>
+  </div>
+
+  <!-- OFFICER -->
+  <div style="background:#eff6ff; padding:10px; margin-top:10px;">
+    🛃 Clearance Officer Note:<br>
+    Shipment is under customs inspection in Delhi. Payment instructions will be issued shortly.
+  </div>
+
+  <table>
+    <tr><th>Date</th><th>Location</th><th>Status</th></tr>
+    <tr><td>Mar 23</td><td>Delhi</td><td>Customs Hold</td></tr>
+    <tr><td>Mar 21</td><td>LAX</td><td>Departed</td></tr>
+    <tr><td>Mar 21</td><td>USA</td><td>Dispatched</td></tr>
+  </table>
+
+  <p style="color:green;">✔ Shipment verified & secured</p>
 
 </div>
 
+<!-- PAYMENT MODAL -->
+<div id="paymentModal">
+  <div style="background:white; padding:20px; border-radius:10px; width:300px;">
+    <h3>🔐 Payment Info</h3>
+    <p>Customs payment account details will be shared soon by the assigned officer.</p>
+    <button onclick="closePay()">Close</button>
+  </div>
+</div>
+
 <script>
-function search() {
-  var input = document.getElementById("code").value;
-  var loading = document.getElementById("loadingBox");
-  var result = document.getElementById("resultBox");
+function search(){
+  let val=document.getElementById("code").value;
+  let load=document.getElementById("loadingBox");
+  let res=document.getElementById("resultBox");
 
-  loading.style.display = "block";
-  result.style.display = "none";
+  load.style.display="block";
+  res.style.display="none";
 
-  setTimeout(function() {
-    loading.style.display = "none";
-
-    if(input === "58669397071") {
-      showTracking("58669397071", "Pickup Scheduled", 10, [
-        "Pickup Scheduled From - Torrance Facility",
-        "Dispatched from USA Warehouse",
-        "In Transit to India (Current)",
-        "Arrived in India Hub",
-        "Out for Delivery",
-        "Delivered"
-      ]);
-    } 
-    else if(input === "11111") {
-      showTracking("11111", "Delivered", 100, [
-        "Order Received",
-        "Shipped",
-        "In Transit",
-        "Reached India",
-        "Out for Delivery",
-        "Delivered Successfully"
-      ]);
-    } 
-    else {
-      alert("Invalid Tracking Number");
-    }
-
-  }, 4000);
+  setTimeout(()=>{
+    load.style.display="none";
+    if(val=="58669397071"){
+      res.style.display="block";
+    } else alert("Invalid Tracking Number");
+  },2000);
 }
 
-function showTracking(id, status, progress, steps) {
-  document.getElementById("trackId").innerText = id;
-  document.getElementById("statusText").innerText = status;
+function updateTime(){
+  document.getElementById("time").innerText =
+  new Date().toLocaleString("en-IN");
+}
+setInterval(updateTime,1000); updateTime();
 
-  document.getElementById("resultBox").style.display = "block";
+let d=new Date(); d.setDate(d.getDate()+2);
+function cd(){
+ let diff=d-new Date();
+ let h=Math.floor(diff/3600000);
+ let m=Math.floor((diff/60000)%60);
+ document.getElementById("countdown").innerText=h+" hrs "+m+" mins";
+}
+setInterval(cd,60000); cd();
 
-  setTimeout(() => {
-    document.getElementById("progressBar").style.width = progress + "%";
-  }, 100);
+function openPay(){
+  document.getElementById("paymentModal").style.display="flex";
+}
 
-  var timelineHTML = "";
-  steps.forEach(step => {
-    if(step.includes("Current") || step.includes("Delivered")) {
-      timelineHTML += `<div class="step active">${step}</div>`;
-    } else {
-      timelineHTML += `<div class="step">${step}</div>`;
-    }
-  });
-
-  document.getElementById("timeline").innerHTML = timelineHTML;
+function closePay(){
+  document.getElementById("paymentModal").style.display="none";
 }
 </script>
 
